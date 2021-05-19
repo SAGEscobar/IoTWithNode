@@ -15,38 +15,38 @@ module.exports = function setupAgent (agentModel) {
       return updated ? agentModel.findOne(cond) : existAgent
     }
 
-    const result = agentModel.create(agent)
-    return JSON.stringify(result)
+    const result = await agentModel.create(agent)
+    return result.dataValues
   }
 
-  function findById (id) {
-    return agentModel.findById(id)
+  async function findById (id) {
+    return await agentModel.findById(id)
   }
 
-  function findByUuid (uuid) {
+  async function findByUuid (uuid) {
     const cond = {
       where: {
         uuid
       }
     }
 
-    return agentModel.findOne(cond)
+    return await agentModel.findOne(cond)
   }
 
-  function findAll () {
-    return agentModel.findAll()
+  async function findAll () {
+    return await agentModel.findAll()
   }
 
-  function findConnected () {
-    return agentModel.findAll({
+  async function findConnected () {
+    return await agentModel.findAll({
       where: {
         connected: true
       }
     })
   }
 
-  function findByUserName (username) {
-    return agentModel.findAll({
+  async function findByUserName (username) {
+    return await agentModel.findAll({
       where: {
         username,
         connected: true

@@ -10,12 +10,12 @@ module.exports = function setupMetric (metricModel, agentModel) {
     if (agent) {
       Object.assign(metric, { agentId: agent.id })
       const result = await metricModel.create(metric)
-      return JSON.stringify(result)
+      return result.dataValues
     }
   }
 
   async function findByAgentUuid (uuid) {
-    return metricModel.findAll({
+    return await metricModel.findAll({
       attributes: ['type'],
       group: ['type'],
       include: [{
@@ -30,7 +30,7 @@ module.exports = function setupMetric (metricModel, agentModel) {
   }
 
   async function findByTypeAgentUuid(type, uuid){
-    return metricModel.findAll({
+    return await metricModel.findAll({
       attributes: [ 'id', ' type', 'value', 'createdAt'],
       where: {
         type

@@ -1,3 +1,5 @@
 /platziverse-db/.nyc_output
 /platziverse-db/coverage
 /platziverse-db/node_modules
+
+/platziverse-mqtt/node_modules
