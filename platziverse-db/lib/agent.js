@@ -45,7 +45,7 @@ module.exports = function setupAgent (agentModel) {
     })
   }
 
-  async function findByUserName (username) {
+  async function findByUsername (username) {
     return await agentModel.findAll({
       where: {
         username,
@@ -58,7 +58,7 @@ module.exports = function setupAgent (agentModel) {
     createOrUpdate,
     findById,
     findAll,
-    findByUserName,
+    findByUsername,
     findConnected,
     findByUuid
   }

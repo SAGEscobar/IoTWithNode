@@ -6,6 +6,7 @@ const setupMetricModel = require('./models/metric')
 const setupAgent = require('./lib/agent')
 const setupMetric = require('./lib/metric')
 const defaults = require('defaults')
+const debug = require('debug')('patziverse:db')
 
 module.exports = {
   db: async function (config) {
