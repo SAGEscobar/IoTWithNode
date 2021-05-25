@@ -2,7 +2,7 @@
 
 const debug = require('debug')('platziverse:mqtt')
 const mosca = require('mosca')
-const redis = require('mosca')
+const redis = require('redis')
 const chalk = require('chalk')
 const { db } = require('platziverse-db')
 const { parsePayload } = require('./utils')
@@ -34,7 +34,6 @@ let Agent, Metric
 
 server.on('clientConnected', client => {
   debug(`Client connected: ${client.id}`)
-
   clients.set(client.id, null)
 })
 
@@ -44,7 +43,6 @@ server.on('clientDisconnected', async client => {
 
   if (agent) {
     agent.connected = false
-
     try {
       await Agent.createOrUpdate(agent)
     } catch (error) {
@@ -54,9 +52,11 @@ server.on('clientDisconnected', async client => {
     clients.delete(client.id)
 
     server.publish({
-      topic: 'agent/disconnecteed',
+      topic: 'agent/disconnected',
       payload: JSON.stringify({
-        uuid: agent.uuid
+        agent: {
+          uuid: agent.uuid
+        }
       })
     })
     debug(`Client (${client.id}) associated with Agent (${agent.id}) marked as disconnected`)
@@ -65,7 +65,6 @@ server.on('clientDisconnected', async client => {
 
 server.on('published', async (packet, client) => {
   debug(`Received: ${packet.topic}`)
-
   switch (packet.topic) {
     case 'agent/connected':
     case 'agent/disconnected':
@@ -79,7 +78,7 @@ server.on('published', async (packet, client) => {
         let agent
         try {
           agent = await Agent.createOrUpdate(payload.agent)
-        }catch (error){
+        } catch (error) {
           return handleError(error)
         }
         debug(`Agent ${agent.uuid} saved`)
@@ -90,11 +89,13 @@ server.on('published', async (packet, client) => {
           server.publish({
             topic: 'agent/connected',
             payload: JSON.stringify({
-              uuid: agent.uuid,
-              name: agent.name,
-              hostname: agent.hostname,
-              pid: agent.pid,
-              connected: agent.connected
+              agent: {
+                uuid: agent.uuid,
+                name: agent.name,
+                hostname: agent.hostname,
+                pid: agent.pid,
+                connected: agent.connected
+              }
             })
           })
         }
@@ -125,14 +126,14 @@ server.on('ready', async () => {
   console.log(`${chalk.green('[platziverse-mqtt]')} server is running`)
 })
 
-function handleFatalError (error) {
-  console.error(`${chalk.red('[Error]')} ${error.message}`)
+function handleFatalError(error) {
+  console.error(`${chalk.red('[Fatal error]')} ${error.message}`)
   console.error(error.stack)
   process.exit(1)
 }
 
-function handleError (error) {
-  console.error(`${chalk.red('[Fatal error]')} ${error.message}`)
+function handleError(error) {
+  console.error(`${chalk.red('[Error]')} ${error.message}`)
   console.error(error.stack)
 }
 
