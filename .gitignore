@@ -9,3 +9,7 @@
 /platziverse-api/node_modules
 
 /platziverse-web/node_modules
+
+/platziverse-cli/node_modules
+
+/platziverse-deploy/node_modules
